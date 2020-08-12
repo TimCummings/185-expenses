@@ -5,7 +5,8 @@ require 'dotenv/load'
 
 def add_expense(amount, memo)
   db = PG.connect(dbname: 'expenses', password: ENV['DB_PASSWORD'])
-  db.exec "INSERT INTO EXPENSES (amount, memo, created_on) VALUES (#{amount}, '#{memo}', NOW());"
+  sql = 'INSERT INTO EXPENSES (amount, memo, created_on) VALUES ($1, $2, $3);'
+  db.exec_params sql, [amount, memo, Date.today]
 end
 
 def display_help
