@@ -15,7 +15,7 @@ class ExpenseData
 
   def list_expenses
     result = @connection.exec 'SELECT * FROM expenses ORDER BY created_on;'
-    format_and_print(result)
+    display_expenses(result)
   end
 
   def search_expenses(query)
@@ -26,10 +26,17 @@ class ExpenseData
 
   private
 
-  def format_and_print(result)
-    result.values.each do |row|
-      puts [row[0].rjust(4), row[3], row[1].rjust(12), row[2]].join(' | ')
-    end
+  def display_expenses(result)
+    result.each { |tuple| puts format_expense(tuple) }
+  end
+
+  def format_expense(tuple)
+    [
+      tuple['id'].rjust(4),
+      tuple['created_on'].rjust(10),
+      tuple['amount'].rjust(12),
+      tuple['memo']
+    ].join(' | ')
   end
 end
 
