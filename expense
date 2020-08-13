@@ -2,7 +2,7 @@
 
 require 'pg'
 require 'dotenv/load'
-require 'pry'
+require 'io/console'
 
 class ExpenseData
   def initialize
@@ -12,6 +12,11 @@ class ExpenseData
   def add_expense(amount, memo)
     sql = 'INSERT INTO expenses (amount, memo, created_on) VALUES ($1, $2, $3);'
     @connection.exec_params sql, [amount, memo, Date.today]
+  end
+
+  def delete_all_expenses
+    @connection.exec 'DELETE FROM expenses;'
+    puts 'All expenses have been deleted.'
   end
 
   def delete_expense(id)
@@ -77,6 +82,10 @@ class CLI
       amount, memo = argv[1], argv[2]
       abort 'You must provide an amount and memo.' unless amount && memo
       @application.add_expense(amount, memo)
+    when 'clear'
+      puts 'This will remove all expenses. Are you sure? (y/n)'
+      confirmation = STDIN.getch
+      @application.delete_all_expenses if confirmation.downcase == 'y'
     when 'delete'
       id = argv[1]
       abort 'You must provide an id for the expense to be deleted.' unless id
