@@ -44,7 +44,21 @@ class ExpenseData
   private
 
   def display_expenses(result)
-    result.each { |tuple| puts format_expense(tuple) }
+    if result.ntuples > 0
+      puts "There are #{result.ntuples} expenses."
+      result.each { |tuple| puts format_expense(tuple) }
+      display_total sum_expenses(result)
+    else
+      puts 'There are no expenses.'
+    end
+  end
+
+  def display_total(total)
+    line_break = '-' * 50
+    label = 'Total'.ljust(19)
+    total = total.to_s.rjust(13)
+    puts line_break
+    puts label + total
   end
 
   def format_expense(tuple)
@@ -54,6 +68,11 @@ class ExpenseData
       tuple['amount'].rjust(12),
       tuple['memo']
     ].join(' | ')
+  end
+
+  def sum_expenses(result)
+    sum = result.reduce(0) { |sum, tuple| sum + tuple['amount'].to_f }
+    sum.round(2)
   end
 end
 
